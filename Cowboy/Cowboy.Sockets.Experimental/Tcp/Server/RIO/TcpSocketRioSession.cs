@@ -43,22 +43,11 @@ namespace Cowboy.Sockets.Experimental
             ITcpSocketRioServerEventDispatcher dispatcher,
             TcpSocketRioServer server)
         {
-            if (configuration == null)
-                throw new ArgumentNullException("configuration");
-            if (bufferManager == null)
-                throw new ArgumentNullException("bufferManager");
-            if (socket == null)
-                throw new ArgumentNullException("socket");
-            if (dispatcher == null)
-                throw new ArgumentNullException("dispatcher");
-            if (server == null)
-                throw new ArgumentNullException("server");
-
-            _configuration = configuration;
-            _bufferManager = bufferManager;
-            _socket = socket;
-            _dispatcher = dispatcher;
-            _server = server;
+            _configuration = configuration ?? throw new ArgumentNullException("configuration");
+            _bufferManager = bufferManager ?? throw new ArgumentNullException("bufferManager");
+            _socket = socket ?? throw new ArgumentNullException("socket");
+            _dispatcher = dispatcher ?? throw new ArgumentNullException("dispatcher");
+            _server = server ?? throw new ArgumentNullException("server");
 
             _sessionKey = Guid.NewGuid().ToString();
             this.StartTime = DateTime.UtcNow;
@@ -387,6 +376,8 @@ namespace Cowboy.Sockets.Experimental
                 _configuration.FrameBuilder.Encoder.EncodeFrame(data, offset, count, out frameBuffer, out frameBufferOffset, out frameBufferLength);
 
                 await _stream.WriteAsync(frameBuffer, frameBufferOffset, frameBufferLength);
+                _stream.Flush();
+
             }
             catch (Exception ex)
             {
